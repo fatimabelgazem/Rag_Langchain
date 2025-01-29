@@ -1,8 +1,11 @@
 # 🔍 RAG Chatbot avec Flask, ZenML, Chroma et Ollama
+--- 
 
 ## 📌 Description
 
 Ce projet implémente un chatbot basé sur le paradigme Retrieval-Augmented Generation (RAG) en utilisant Flask, ZenML, ChromaDB et Ollama pour répondre aux questions des utilisateurs sur la base de documents PDF chargés dynamiquement.
+
+---
 
 ## 🏗️ Architecture du Projet
 
@@ -14,11 +17,13 @@ ChromaDB : Base de données vectorielle pour la recherche des passages pertinent
 
 Ollama : Modèle LLM pour générer des réponses basées sur les passages récupérés.
 
+---
 ## 📦 Installation
 
 Assurez-vous d'avoir Python installé, puis exécutez les commandes suivantes :
 
  1- Cloner le projet
+ 
 ```bash 
 git clone <lien_du_repo>
 cd <nom_du_repo>
@@ -32,48 +37,59 @@ cd <nom_du_repo>
 pip install flask zenml langchain langchain-community langchain-chroma chromadb ollama opencv-python PyMuPDF
 
 ```
-##🚀 Utilisation
+---
 
-Démarrer l'API Flask :
+## 🚀 Utilisation
+
+1- Démarrer l'API Flask :
 
 ```bash
 python app.py
 ```
 
-Accéder à l'interface :
+2- Accéder à l'interface :
 
 Ouvrez http://127.0.0.1:5000/ dans votre navigateur.
 
-Envoyer une requête à l'API :
+3- Envoyer une requête à l'API :
+
+```bash
 
 curl -X POST http://127.0.0.1:5000/ask -H "Content-Type: application/json" -d '{"question": "Quelle est la capitale de la France ?"}'
+```
+---
 
 ## 📚 Fonctionnalités du Pipeline RAG
 
-Le pipeline suit les étapes suivantes :
+###Le pipeline suit les étapes suivantes :
 
-Chargement des documents (fichiers PDF).
+1- Chargement des documents (fichiers PDF).
 
-Segmentation des documents en petits morceaux.
+2- Segmentation des documents en petits morceaux.
 
-Stockage des embeddings dans ChromaDB.
+3- Stockage des embeddings dans ChromaDB.
 
-Recherche de passages pertinents via Similarity Search.
+4- Recherche de passages pertinents via Similarity Search.
 
-Génération de réponse avec le modèle Ollama.
+5- Génération de réponse avec le modèle Ollama.
+
+---
 
 ## 🧠 Modèles Ollama
 
 Le projet utilise les modèles suivants :
 
-nomic-embed-text : Génère des embeddings pour la recherche vectorielle.
+**nomic-embed-text** : Génère des embeddings pour la recherche vectorielle.
 
-llama3 : Génère des réponses basées sur les passages trouvés.
+**llama3** : Génère des réponses basées sur les passages trouvés.
 
 Vous pouvez tester d'autres modèles disponibles avec :
 
+```bash
 from langchain_community.llms.ollama import Ollama
 model = Ollama(model="mistral")
+```
+---
 
 ## 🛠️ Personnalisation
 
