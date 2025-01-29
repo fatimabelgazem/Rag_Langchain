@@ -61,7 +61,7 @@ curl -X POST http://127.0.0.1:5000/ask -H "Content-Type: application/json" -d '{
 
 ## 📚 Fonctionnalités du Pipeline RAG
 
-###Le pipeline suit les étapes suivantes :
+### Le pipeline suit les étapes suivantes :
 
 1- Chargement des documents (fichiers PDF).
 
