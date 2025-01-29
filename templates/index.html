@@ -1,0 +1,215 @@
+<!DOCTYPE html> 
+<html lang="fr"> 
+<head> 
+    <meta charset="UTF-8"> 
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+    <title>Chatbot RAG</title> 
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700&display=swap" rel="stylesheet"> 
+    <style> 
+        /* Global styles */ 
+        * { 
+            margin: 0; 
+            padding: 0; 
+            box-sizing: border-box; 
+        } 
+
+        body { 
+            font-family: 'Poppins', sans-serif; 
+            background: #1e1e2e; 
+            color: #dcdcdc; 
+            display: flex; 
+            flex-direction: column; 
+            justify-content: space-between; 
+            align-items: center; 
+            height: 100vh; 
+            margin: 0; 
+            padding: 0; 
+        } 
+
+        header { 
+            background: linear-gradient(135deg, #4e54c8, #8f94fb); 
+            color: white; 
+            text-align: center; 
+            padding: 1rem 0; 
+            width: 100%; 
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1); 
+        } 
+
+        h1 { 
+            font-size: 2.2rem; 
+            margin-bottom: 0.5rem; 
+            letter-spacing: 1px; 
+            text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2); 
+        } 
+
+        .container { 
+            background-color: #2b2b3b; 
+            border-radius: 20px; 
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2); 
+            width: 100%; 
+            max-width: 850px; 
+            height: 75vh; 
+            display: flex; 
+            flex-direction: column; 
+            justify-content: space-between; 
+            padding: 1.5rem; 
+            position: relative; 
+        } 
+
+        .chat-box { 
+            flex: 1; 
+            overflow-y: auto; 
+            display: flex; 
+            flex-direction: column-reverse; 
+            padding: 1rem; 
+            background: #1e1e2e; 
+            border-radius: 12px; 
+            margin-bottom: 1rem; 
+            box-shadow: inset 0 2px 15px rgba(0, 0, 0, 0.1); 
+        } 
+
+        .message { 
+            display: inline-block; 
+            max-width: 75%; 
+            padding: 1rem; 
+            margin: 0.8rem 0; 
+            border-radius: 20px; 
+            font-size: 1.15rem; 
+            line-height: 1.5; 
+        } 
+
+        .message.user { 
+            background: #8f94fb; 
+            color: #1e1e2e; 
+            text-align: left; 
+            border-top-left-radius: 0; 
+        } 
+
+        .message.bot { 
+            background: #4e54c8; 
+            color: white; 
+            text-align: left; 
+            border-top-right-radius: 0; 
+        } 
+
+        .form-container { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            background: #1e1e2e; 
+            padding: 1rem; 
+            border-radius: 50px; 
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); 
+        } 
+
+        input[type="text"] { 
+            width: 80%; 
+            padding: 1rem; 
+            border-radius: 50px; 
+            border: none; 
+            background: #2b2b3b; 
+            color: #dcdcdc; 
+            font-size: 1.1rem; 
+            transition: all 0.3s ease; 
+        } 
+
+        input[type="text"]:focus { 
+            outline: none; 
+            box-shadow: 0 0 20px rgba(78, 84, 200, 0.5); 
+        } 
+
+        button { 
+            width: 15%; 
+            padding: 1rem; 
+            border-radius: 50px; 
+            border: none; 
+            background: #8f94fb; 
+            color: white; 
+            font-size: 1.1rem; 
+            cursor: pointer; 
+            transition: background 0.3s ease, transform 0.3s ease; 
+        } 
+
+        button:hover { 
+            background: #4e54c8; 
+            transform: scale(1.1); 
+        } 
+
+        footer { 
+            background: #2b2b3b; 
+            text-align: center; 
+            padding: 1rem 0; 
+            color: #dcdcdc; 
+            font-size: 0.9rem; 
+            border-top: 1px solid #4e54c8; 
+            width: 100%; 
+        } 
+
+        .error-message { 
+            color: red; 
+            font-size: 1.2rem; 
+            text-align: center; 
+        } 
+    </style> 
+</head> 
+<body> 
+    <header> 
+        <h1>Chatbot RAG</h1> 
+        <p>Posez vos questions et obtenez des réponses en temps réel</p> 
+    </header> 
+
+    <div class="container"> 
+        <div class="chat-box" id="chat-box"> 
+            <!-- Messages du chatbot --> 
+        </div> 
+        <form id="chat-form" class="form-container"> 
+            <input type="text" id="question" placeholder="Posez votre question..." required /> 
+            <button type="submit">Envoyer</button> 
+        </form> 
+    </div> 
+
+    <footer> 
+        &copy; 2024 Chatbot RAG | Tous droits réservés. 
+    </footer> 
+
+    <script> 
+        const chatBox = document.getElementById("chat-box"); 
+        const chatForm = document.getElementById("chat-form"); 
+        const questionInput = document.getElementById("question"); 
+
+        chatForm.addEventListener("submit", async (e) => { 
+            e.preventDefault(); 
+            const question = questionInput.value.trim(); 
+            if (!question) return; 
+
+            // Ajouter la question de l'utilisateur 
+            addMessage("user", question); 
+
+            // Envoyer la requête au serveur Flask 
+            const response = await fetch("/ask", { 
+                method: "POST", 
+                headers: { 
+                    "Content-Type": "application/json", 
+                }, 
+                body: JSON.stringify({ question }), 
+            }); 
+
+            const data = await response.json(); 
+            if (data.response) { 
+                addMessage("bot", data.response); 
+            } else { 
+                addMessage("bot", "Une erreur est survenue. Veuillez réessayer."); 
+            } 
+
+            questionInput.value = ""; 
+        }); 
+
+        function addMessage(role, text) { 
+            const messageDiv = document.createElement("div"); 
+            messageDiv.classList.add("message", role); 
+            messageDiv.textContent = text; 
+            chatBox.prepend(messageDiv); 
+        } 
+    </script> 
+</body> 
+</html>

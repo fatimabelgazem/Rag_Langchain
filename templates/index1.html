@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Posez une question</title>
+</head>
+<body>
+    <h1>Posez votre question</h1>
+    <form action="/ask" method="POST">
+        <label for="question">Question :</label>
+        <textarea id="question" name="question" rows="4" cols="50" required></textarea>
+        <br><br>
+        <button type="submit">Poser la question</button>
+    </form>
+
+    {% if question %}
+        <h3>Votre question :</h3>
+        <p>{{ question }}</p>
+        <h3>Réponse :</h3>
+        <p>{{ response }}</p>
+    {% elif error %}
+        <p style="color: red;">{{ error }}</p>
+    {% endif %}
+</body>
+</html>
